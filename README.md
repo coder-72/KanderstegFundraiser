@@ -1,2 +1,2 @@
-# KanderstagFundraiser
-website for kanderstag fundraising
+# KanderstegFundraiser
+website for kandersteg fundraising
