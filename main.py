@@ -9,6 +9,7 @@ def index():
     donate = url_for('static', filename='donate-donation-svgrepo-com.svg')
     about = url_for('static', filename='about-filled-svgrepo-com.svg')
     events = url_for('static', filename='month-schedule-time-calendar-checklist-date-svgrepo-com.svg')
+    change_stats("index_reload")
     return render_template("index.html", css=css, donate=donate, about=about, events=events, favicon=icon)
 
 
@@ -16,6 +17,7 @@ def index():
 def about():
     css = url_for('static', filename='style.css')
     until = time_till()
+    change_stats("about_reload")
     return render_template("about.html", css=css, until=until)
 
 @app.route("/donate")
@@ -23,6 +25,7 @@ def donate():
     css = url_for('static', filename='style.css')
     amount_raised, target_amount = get_gofundme_donation_details()
     percentage = amount_raised/target_amount *100
+    change_stats("donate_reload")
     return render_template("donate.html", css=css, amount_raised=amount_raised,
                            target_amount=target_amount, percentage=percentage)
 
@@ -30,7 +33,13 @@ def donate():
 def events():
     css = url_for('static', filename='style.css')
     html = make_events_accordian()
+    change_stats("events_reload")
     return render_template("events.html", css=css, html=html)
+
+@app.route("/donate/redirect")
+def donate_redirect():
+    change_stats("donate_button")
+    return redirect("https://www.gofundme.com/f/3rd-macclesfield-scouts-and-maasai-explorers-to-kandersteg")
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=3000, debug=True)
