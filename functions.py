@@ -185,3 +185,24 @@ def time_till():
     days = time_difference.days
     hours = time_difference.seconds // 3600
     return f"{days} days {hours} hrs "
+
+def change_stats(stat_name):
+    stat_list = []
+    csv_path = 'stats.csv'
+    header = ['name', 'stat']
+    with open(csv_path, 'r', newline='') as rfile:
+        reader = csv.DictReader(rfile, delimiter="|")
+        for row in reader:
+            stat_list.append(row)
+
+    with open(csv_path, 'w', newline='') as wfile:
+
+        writer = csv.DictWriter(wfile, fieldnames=header, delimiter="|")
+        writer.writeheader()
+
+        for stat in stat_list:
+            if stat["name"] == str(stat_name):
+                stat["stat"] = str(int(stat["stat"]) + 1)
+            writer.writerow(stat)
+
+
