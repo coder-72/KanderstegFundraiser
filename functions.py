@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def extract_numbers(text):
@@ -73,24 +73,115 @@ def make_events_accordian():
     # Filter future events
     today = datetime.now()
     future_events = [event for event in events if event['date'] > today]
+    future_events.sort(key=date_sort)
 
     # Generate HTML for the Bootstrap accordion
     for index, event in enumerate(future_events):
-        html += f'''
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="heading{index}">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
-              {event['title']}
-            </button>
-          </h2>
-          <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
-            <div class="accordion-body">
-              {event['description']}<br>
-              <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
+        if is_today(today, event['date']):
+            html += f'''
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading{index}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
+                  {event['title']}&emsp;
+                  <span class="badge bg-secondary">Today</span>
+                </button>
+              </h2>
+              <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
+                <div class="accordion-body">
+                  {event['description']}<br>
+                  <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        '''
+            '''
+        elif within_week(today, event['date']):
+            html += f'''
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading{index}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
+                  {event['title']}&emsp;
+                  <span class="badge bg-secondary">This week</span>
+                </button>
+              </h2>
+              <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
+                <div class="accordion-body">
+                  {event['description']}<br>
+                  <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
+                </div>
+              </div>
+            </div>
+            '''
+        elif is_next_week(today, event['date']):
+            html += f'''
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading{index}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
+                  {event['title']}&emsp;
+                  <span class="badge bg-secondary">Next week</span>
+                </button>
+              </h2>
+              <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
+                <div class="accordion-body">
+                  {event['description']}<br>
+                  <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
+                </div>
+              </div>
+            </div>
+            '''
+
+        else:
+            html += f'''
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading{index}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
+                  {event['title']}
+                </button>
+              </h2>
+              <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
+                <div class="accordion-body">
+                  {event['description']}<br>
+                  <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
+                </div>
+              </div>
+            </div>
+            '''
+
+
     return html
 
 
+def within_week(today, date):
+    one_week_later = today + timedelta(weeks=1)
+
+    # Check if the target date is within the next week
+    within_next_week = today <= date < one_week_later
+
+    return within_next_week
+def is_today(today, date):
+    same_day = today.date() == date.date()
+    return same_day
+
+def is_next_week(today, date):
+    start_of_next_week = today + timedelta(days=(7 - today.weekday()))
+
+    end_of_next_week = start_of_next_week + timedelta(days=6)
+
+    is_next_week = start_of_next_week <= date <= end_of_next_week
+
+    return is_next_week
+
+def date_sort(event):
+    return event["date"].timestamp()
+
+
+def time_till():
+    today = datetime.now()
+
+    date = datetime(2025, 8, 15, 0, 0)  # Replace with your target date and time
+
+    time_difference = date - today
+
+    # Extract days and hours from the timedelta object
+    days = time_difference.days
+    hours = time_difference.seconds // 3600
+    return f"{days} days {hours} hrs "

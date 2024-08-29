@@ -15,7 +15,8 @@ def index():
 @app.route("/about")
 def about():
     css = url_for('static', filename='style.css')
-    return render_template("about.html", css=css)
+    until = time_till()
+    return render_template("about.html", css=css, until=until)
 
 @app.route("/donate")
 def donate():
