@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from functions import *
+from tabulate import tabulate
+import csv
 
 app = Flask(__name__)
 @app.route("/")
@@ -40,6 +42,14 @@ def events():
 def donate_redirect():
     change_stats("donate_button")
     return redirect("https://www.gofundme.com/f/3rd-macclesfield-scouts-and-maasai-explorers-to-kandersteg")
+
+@app.route("/admin/stats")
+def stats():
+    with open("stats.csv", "r") as statsfile:
+        reader = csv.reader(statsfile, delimiter="|")
+        list = [row for row in reader]
+        table = str(tabulate(list,headers='firstrow', tablefmt='html'))
+        return table
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=3000, debug=True)
