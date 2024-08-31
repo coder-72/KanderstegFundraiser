@@ -51,6 +51,13 @@ def stats():
         table = str(tabulate(list,headers='firstrow', tablefmt='html'))
         return table
 
+@app.route("/admin/post", methods=['POST'])
+def post_ping():
+    if request.method == 'POST':
+        ping_info = request.get_json()['ping_info']
+        change_stats("ping_info", changeby=ping_info, valuetype="str")
+    return "ping successful"
+
 
 
 if __name__ == "__main__":
