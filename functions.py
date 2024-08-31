@@ -186,7 +186,7 @@ def time_till():
     hours = time_difference.seconds // 3600
     return f"{days} days {hours} hrs "
 
-def change_stats(stat_name):
+def change_stats(stat_name, changeby="", valuetype="int"):
     stat_list = []
     csv_path = 'stats.csv'
     header = ['name', 'stat']
@@ -202,7 +202,10 @@ def change_stats(stat_name):
 
         for stat in stat_list:
             if stat["name"] == str(stat_name):
-                stat["stat"] = str(int(stat["stat"]) + 1)
+                if valuetype == "int":
+                    stat["stat"] = str(int(stat["stat"]) + 1)
+                else:
+                    stat["stat"] = changeby
             writer.writerow(stat)
 
 
