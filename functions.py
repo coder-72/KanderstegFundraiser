@@ -83,12 +83,12 @@ def make_events_accordian():
               <h2 class="accordion-header" id="heading{index}">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
                   {event['title']}&emsp;
-                  <span class="badge bg-secondary">Today</span>
+                  <span class="badge bg-danger">Today</span>
                 </button>
               </h2>
               <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
                 <div class="accordion-body">
-                  {event['description']}<br>
+                  <strong>Description:</strong> {event['description']}<br>
                   <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
                 </div>
               </div>
@@ -100,12 +100,12 @@ def make_events_accordian():
               <h2 class="accordion-header" id="heading{index}">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
                   {event['title']}&emsp;
-                  <span class="badge bg-secondary">This week</span>
+                  <span class="badge bg-warning">This week</span>
                 </button>
               </h2>
               <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
                 <div class="accordion-body">
-                  {event['description']}<br>
+                  <strong>Description:</strong> {event['description']}<br>
                   <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
                 </div>
               </div>
@@ -117,18 +117,17 @@ def make_events_accordian():
               <h2 class="accordion-header" id="heading{index}">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
                   {event['title']}&emsp;
-                  <span class="badge bg-secondary">Next week</span>
+                  <span class="badge bg-info">Next week</span>
                 </button>
               </h2>
               <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
                 <div class="accordion-body">
-                  {event['description']}<br>
+                  <strong>Description:</strong> {event['description']}<br>
                   <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
                 </div>
               </div>
             </div>
             '''
-
         else:
             html += f'''
             <div class="accordion-item">
@@ -139,16 +138,14 @@ def make_events_accordian():
               </h2>
               <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
                 <div class="accordion-body">
-                  {event['description']}<br>
+                  <strong>Description:</strong> {event['description']}<br>
                   <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
                 </div>
               </div>
             </div>
             '''
 
-
     return html
-
 
 def within_week(today, date):
     one_week_later = today + timedelta(weeks=1)
