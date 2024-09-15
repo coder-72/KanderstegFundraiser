@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import csv
 from datetime import datetime, timedelta
+
+
 
 
 def extract_numbers(text):
@@ -50,105 +51,8 @@ def get_gofundme_donation_details():
     return amount_raised, target_amount
 
 
-
-
-
-
-def make_events_accordian():
-    csv_path = "events_accordian.csv"
-    html = ""
-    events = []
-    with open(csv_path, 'r', newline='') as file:
-        reader = csv.DictReader(file, delimiter="|")
-        for row in reader:
-            event_date = datetime.strptime(row['date'], '%Y-%m-%d')
-            events.append(
-                {
-                    'title': row['title'],
-                    'description': row['description'],
-                    'date': event_date
-                }
-            )
-
-    # Filter future events
-    today = datetime.now()
-    future_events = [event for event in events if event['date'] > today]
-    future_events.sort(key=date_sort)
-
-    # Generate HTML for the Bootstrap accordion
-    for index, event in enumerate(future_events):
-        if is_today(today, event['date']):
-            html += f'''
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="heading{index}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
-                  {event['title']}&emsp;
-                  <span class="badge bg-danger">Today</span>
-                </button>
-              </h2>
-              <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
-                <div class="accordion-body">
-                  <strong>Description:</strong> {event['description']}<br>
-                  <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
-                </div>
-              </div>
-            </div>
-            '''
-        elif within_week(today, event['date']):
-            html += f'''
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="heading{index}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
-                  {event['title']}&emsp;
-                  <span class="badge bg-warning">This week</span>
-                </button>
-              </h2>
-              <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
-                <div class="accordion-body">
-                  <strong>Description:</strong> {event['description']}<br>
-                  <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
-                </div>
-              </div>
-            </div>
-            '''
-        elif is_next_week(today, event['date']):
-            html += f'''
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="heading{index}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
-                  {event['title']}&emsp;
-                  <span class="badge bg-info">Next week</span>
-                </button>
-              </h2>
-              <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
-                <div class="accordion-body">
-                  <strong>Description:</strong> {event['description']}<br>
-                  <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
-                </div>
-              </div>
-            </div>
-            '''
-        else:
-            html += f'''
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="heading{index}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{index}" aria-expanded="true" aria-controls="collapse{index}">
-                  {event['title']}
-                </button>
-              </h2>
-              <div id="collapse{index}" class="accordion-collapse collapse" aria-labelledby="heading{index}" data-bs-parent="#accordion">
-                <div class="accordion-body">
-                  <strong>Description:</strong> {event['description']}<br>
-                  <small class="text-muted">{event['date'].strftime('%Y-%m-%d')}</small>
-                </div>
-              </div>
-            </div>
-            '''
-
-    return html
-
 def within_week(today, date):
-    one_week_later = today + timedelta(weeks=1)
+    one_week_later = today + timedelta(days=(7-today.weekday()))
 
     # Check if the target date is within the next week
     within_next_week = today <= date < one_week_later
@@ -156,6 +60,11 @@ def within_week(today, date):
     return within_next_week
 def is_today(today, date):
     same_day = today.date() == date.date()
+    return same_day
+
+def is_tomorrow(today, date):
+    tomorrow = date.date() + timedelta(days=1)
+    same_day = today.date() == tomorrow
     return same_day
 
 def is_next_week(today, date):
@@ -182,27 +91,4 @@ def time_till():
     days = time_difference.days
     hours = time_difference.seconds // 3600
     return f"{days} days {hours} hrs "
-
-def change_stats(stat_name, changeby="", valuetype="int"):
-    stat_list = []
-    csv_path = 'stats.csv'
-    header = ['name', 'stat']
-    with open(csv_path, 'r', newline='') as rfile:
-        reader = csv.DictReader(rfile, delimiter="|")
-        for row in reader:
-            stat_list.append(row)
-
-    with open(csv_path, 'w', newline='') as wfile:
-
-        writer = csv.DictWriter(wfile, fieldnames=header, delimiter="|")
-        writer.writeheader()
-
-        for stat in stat_list:
-            if stat["name"] == str(stat_name):
-                if valuetype == "int":
-                    stat["stat"] = str(int(stat["stat"]) + 1)
-                else:
-                    stat["stat"] = changeby
-            writer.writerow(stat)
-
 
