@@ -1,4 +1,4 @@
-#!/home/jake/PycharmProjects/KanderstagFundraiser/venv/bin/python3
+#!/home/jake/PycharmProjects/KanderstagFundraiser/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
