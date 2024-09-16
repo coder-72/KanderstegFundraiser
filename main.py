@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from database import get_all_stats, update_stats, make_events_accordian, get_raw_events, close
 from functions import *
 from tabulate import tabulate
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 @app.route("/")
 def index():
     css = url_for('static', filename='style.css')
@@ -58,7 +58,10 @@ def post_ping():
         get_all_stats()
     return "ping successful"
 
-
+@app.route('/sitemap.xml')
+@app.route('/robots.txt')
+def static_from_root():
+ return send_from_directory(app.static_folder, request.path[1:])
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=3000)
