@@ -25,7 +25,7 @@ def get_gofundme_donation_details():
     soup = BeautifulSoup(response.text, 'html.parser')
 
     # Find the specific div containing the donation details
-    donation_element = soup.find('div', {'class': 'progress-meter_progressMeterHeading__A6Slt'})
+    donation_element = soup.find('div', {'class': 'progress-meter_progressMeterHeading__A6Slt hrt-text-body-sm'})
 
     if donation_element:
         # Extract the amount raised and the target amount
