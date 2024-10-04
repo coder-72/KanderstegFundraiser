@@ -3,7 +3,7 @@ from functions import *
 
 # Define your connection parameters
 conn = psycopg2.connect(
-    "postgresql://user:TBEbuSBL4bS6jHquPFq8NQ3BvrY6AEEK@dpg-crip6s68ii6s73f7ms60-a/kandersteg_website_database")
+    "postgresql://user:TBEbuSBL4bS6jHquPFq8NQ3BvrY6AEEK@dpg-crip6s68ii6s73f7ms60-a.frankfurt-postgres.render.com/kandersteg_website_database")
 
 # Create a cursor object
 cur = conn.cursor()

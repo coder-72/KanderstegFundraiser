@@ -7,15 +7,11 @@ from datetime import datetime, timedelta
 
 
 def extract_numbers(text):
-    # Remove commas from the text
-    text = text.replace(',', '')
-    # Find all numbers in the text and return them as integers
-    numbers = re.findall(r'\d+', text)
-    return [int(num) for num in numbers]
-
+    """Extracts numbers from a string and returns them as floats."""
+    return [float(s.replace('$', '').replace(',', '')) for s in text.split() if s.replace('.', '', 1).isdigit()]
 
 def get_gofundme_donation_details():
-    url = 'https://www.gofundme.com/f/3rd-macclesfield-scouts-and-maasai-explorers-to-kandersteg'
+    url = 'https://gofund.me/3e97ad2a'
 
     # Send a GET request to the GoFundMe page
     response = requests.get(url)
@@ -25,7 +21,7 @@ def get_gofundme_donation_details():
     soup = BeautifulSoup(response.text, 'html.parser')
 
     # Find the specific div containing the donation details
-    donation_element = soup.find('div', {'class': 'progress-meter_progressMeterHeading__A6Slt hrt-text-body-sm'})
+    donation_element = soup.find('div', {'class': 'progress-meter_progressMeterHeading__A6Slt'})
 
     if donation_element:
         # Extract the amount raised and the target amount
@@ -35,18 +31,16 @@ def get_gofundme_donation_details():
             target_amount_text = spans[1].text.strip()
 
             # Extract numbers from the text
-            amount_raised_numbers = extract_numbers(amount_raised_text)
-            target_amount_numbers = extract_numbers(target_amount_text)
+            amount_raised = extract_numbers(amount_raised_text)
+            target_amount = extract_numbers(target_amount_text)
 
             # Assuming the first number found is the relevant amount
-            amount_raised = amount_raised_numbers[0] if amount_raised_numbers else None
-            target_amount = target_amount_numbers[0] if target_amount_numbers else None
+            amount_raised = amount_raised[0] if amount_raised else None
+            target_amount = target_amount[0] if target_amount else None
         else:
-            amount_raised = None
-            target_amount = None
+            raise RuntimeError("spans don't exist")
     else:
-        amount_raised = None
-        target_amount = None
+        raise RuntimeError("div doesn't exist")
 
     return amount_raised, target_amount
 
