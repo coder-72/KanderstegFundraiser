@@ -1,18 +1,19 @@
-import psycopg2
+import libsql_experimental as libsql
 from functions import *
+import os
 
-# Define your connection parameters
-conn = psycopg2.connect(
-    "postgresql://user:TBEbuSBL4bS6jHquPFq8NQ3BvrY6AEEK@dpg-crip6s68ii6s73f7ms60-a.frankfurt-postgres.render.com/kandersteg_website_database")
+auth = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3Mjk0NDA1MTgsImlkIjoiMGM5MjE3YTYtYjIwZC00MzYyLTlhZDUtYmU3YzI5NzQyYjgxIn0.kL_ymDIAWf4FyUBnEdOhLjKrxcm-K9R_UYGdrCCNXKWr-WZLg9UKIPgBm_TkdUnFsnCbDH1pDGhPukO0pcGhAQ"
+url = "libsql://database-coder-72.turso.io"
 
-# Create a cursor object
-cur = conn.cursor()
+conn = libsql.connect("database.db",sync_interval=30, sync_url=url,
+                      auth_token=auth)
+conn.sync()
 
 def update_stats(stat:str, value:int):
 
 
     # Execute an SQL query (example: creating a table)
-    cur.execute(f'''
+    conn.execute(f'''
         UPDATE visits
         SET visit_count = {get_stat(stat) + value}
         WHERE endpoint = '{stat}';
@@ -22,33 +23,32 @@ def update_stats(stat:str, value:int):
     conn.commit()
 
 def get_stat(stat:str):
-    cur.execute(f'''
+    result = conn.execute(f'''
         SELECT visit_count FROM visits WHERE endpoint = '{stat}';
-    ''')
-    result = cur.fetchone()
+    ''').fetchone()
     conn.commit()
     return result[0]
 
 def get_all_stats():
-    cur.execute(f'''
+    result = conn.execute(f'''
             SELECT * FROM visits;
-        ''')
-    result = cur.fetchall()
+        ''').fetchall()
+    conn.commit()
     return result
 
 def reset_stats():
-    cur.execute(f'''
+    conn.execute(f'''
                 UPDATE visits SET visit_count = 0;
             ''')
+    conn.commit()
 
 def make_events_accordian():
     html = ""
     events = []
 
-    cur.execute(f'''
+    result = conn.execute(f'''
                 SELECT * FROM events;
-''')
-    result = cur.fetchall()
+''').fetchall()
     for row in result:
         event_date = datetime.strptime(row[2], '%Y-%m-%d')
         events.append(
@@ -135,13 +135,11 @@ def make_events_accordian():
     return html
 
 def get_raw_events():
-    cur.execute(f'''
+    result = conn.execute(f'''
                     SELECT * FROM events;
-    ''')
-    result = cur.fetchall()
+    ''').fetchall()
     return result
 
 def close():
     # Close the cursor and connection
-    cur.close()
     conn.close()

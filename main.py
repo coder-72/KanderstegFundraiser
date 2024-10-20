@@ -25,11 +25,8 @@ def about():
 @app.route("/donate")
 def donate():
     css = url_for('static', filename='style.css')
-    amount_raised, target_amount = 85, 1500
-    percentage = round((amount_raised/target_amount *100), 0)
     update_stats("donate", 1)
-    return render_template("donate.html", css=css, amount_raised=amount_raised,
-                           target_amount=target_amount, percentage=percentage)
+    return render_template("donate.html", css=css)
 
 @app.route("/events")
 def events():
